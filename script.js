@@ -75,12 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const AUDIO = {
         context: null,
         sounds: {
-            keypress: ['sounds/key1.wav', 'sounds/key2.wav', 'sounds/key3.wav'],
-            success: 'sounds/success.wav',
-            error: 'sounds/error.wav',
-            ambient: 'sounds/ambient.mp3',
-            glitch: 'sounds/glitch.mp3',
-            unlock: 'sounds/unlock.mp3'
+            keypress: ['https://raw.githubusercontent.com/deusexlumen/ZERFALL/cf776035f87bd5f0fca2383541d3d6c8a1e7ced1/key1.wav', 'https://raw.githubusercontent.com/deusexlumen/ZERFALL/cf776035f87bd5f0fca2383541d3d6c8a1e7ced1/key2.wav', 'https://raw.githubusercontent.com/deusexlumen/ZERFALL/cf776035f87bd5f0fca2383541d3d6c8a1e7ced1/key3.wav'],
+            success: 'https://raw.githubusercontent.com/deusexlumen/ZERFALL/cf776035f87bd5f0fca2383541d3d6c8a1e7ced1/success.wav',
+            error: 'https://raw.githubusercontent.com/deusexlumen/ZERFALL/cf776035f87bd5f0fca2383541d3d6c8a1e7ced1/error.wav',
+            ambient: 'https://raw.githubusercontent.com/deusexlumen/ZERFALL/09ae37043373b8a90ecec9fb2d7d48a1663de31f/ambient.mp3',
+            glitch: 'https://raw.githubusercontent.com/deusexlumen/ZERFALL/cf776035f87bd5f0fca2383541d3d6c8a1e7ced1/glitch.wav',
+            unlock: 'https://raw.githubusercontent.com/deusexlumen/ZERFALL/cf776035f87bd5f0fca2383541d3d6c8a1e7ced1/unlock.wav'
         },
         ambient: null,
         init() {
