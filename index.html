@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZERFALL PROTOKOLL</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="start-menu" class="start-menu" role="dialog" aria-modal="true" aria-labelledby="start-title" aria-hidden="false">
+        <div class="start-menu__content">
+            <h1 id="start-title">ZERFALL PROTOKOLL</h1>
+            <p>v7.3.4</p>
+            <button id="start-button" class="start-menu__button">SYSTEM STARTEN</button>
+            <div class="start-menu__options">
+                <label>
+                    <input type="checkbox" id="reduced-motion"> Reduzierte Animation
+                </label>
+                <label>
+                    <input type="checkbox" id="audio-enabled" checked> Audio aktiviert
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATUS BAR (UI Enhancement) -->
+    <div id="status-bar" class="status-bar" aria-live="polite" aria-atomic="true" aria-hidden="true">
+        <div class="status-left">
+            <span id="status-username" class="status-username">Gast</span>
+            <button id="help-toggle" class="help-toggle" aria-expanded="false" aria-controls="help-overlay" title="Hilfe anzeigen">?</button>
+        </div>
+        <div class="status-right">
+            <label for="status-corruption" class="visually-hidden">Korruption Level</label>
+            <progress id="status-corruption" max="100" value="0"></progress>
+        </div>
+    </div>
+
+    <main class="terminal-wrapper" id="terminal-wrapper">
+        <div class="terminal" id="terminal-container" role="log" aria-live="polite">
+            <!-- Dynamischer Inhalt (Ausgaben der Befehle) wird hier durch JS eingefügt -->
+        </div>
+
+        <div class="terminal__line terminal__line--input">
+            <label for="command-input" class="terminal__prompt">
+                <span aria-hidden="true">&gt;</span>
+                <span class="visually-hidden">Befehlszeile</span>
+            </label>
+            <input 
+                type="text" 
+                id="command-input" 
+                class="terminal__input" 
+                autofocus 
+                autocomplete="off" 
+                autocapitalize="off" 
+                spellcheck="false"
+            />
+        </div>
+    </main>
+
+    <!-- HELP OVERLAY -->
+    <div id="help-overlay" class="help-overlay" role="dialog" aria-hidden="true" aria-label="Kurzanleitung">
+        <div class="help-overlay__inner" role="document">
+            <h2>Kurzanleitung</h2>
+            <ul>
+                <li><strong>login [name]</strong> — Zugang erlangen</li>
+                <li><strong>ls</strong>, <strong>cat [datei]</strong> — Dateien untersuchen</li>
+                <li><strong>scan</strong>, <strong>decode [text]</strong> — Hinweise finden</li>
+                <li>Tab = Vervollständigung · Pfeile = Verlauf</li>
+            </ul>
+            <button id="help-close" class="help-close">Schließen</button>
+        </div>
+    </div>
+
+    <div id="collapse-container" aria-hidden="true">
+        <!-- Dieser Container wird für die Endsequenz verwendet -->
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

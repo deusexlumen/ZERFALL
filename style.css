@@ -1,0 +1,476 @@
+/* style.css */
+
+/* --- 1. Grundgerüst & Theming --- */
+:root {
+    --color-background: #0d0d0d;
+    --color-text: #00ff41;
+    --color-prompt: var(--color-text);
+    --color-error: #ff4141;
+    --color-system: #f0f041;
+
+    --font-family-mono: 'VT323', monospace;
+    --font-size-base: 1.2rem;
+
+    --scanline-intensity: 0.05;
+    --glitch-intensity: 0;
+    
+    --blur-intensity: 0px;
+    --hue-shift: 0deg;
+    --contrast-level: 1;
+    --effect-transition-duration: 0.5s;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    
+    filter: 
+        blur(var(--blur-intensity)) 
+        hue-rotate(var(--hue-shift)) 
+        contrast(var(--contrast-level));
+    transition: filter var(--effect-transition-duration) linear;
+}
+
+/* --- 2. CRT / Scanline Effekt --- */
+body::after {
+    content: '';
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0,
+        rgba(0, 0, 0, var(--scanline-intensity)) 2px
+    );
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* --- 3. Terminal-Layout & Styling --- */
+.terminal-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 1rem;
+    animation: crt-on 1.5s ease-out;
+}
+
+.shake-error {
+    animation: shake-error 400ms ease-in-out;
+}
+
+.terminal {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    word-break: break-all;
+}
+
+.terminal__line {
+    display: flex;
+}
+
+.terminal__output {
+    animation: scan-in 250ms ease-out backwards;
+}
+
+.terminal__output p {
+    margin-block: 0 0.5em;
+    position: relative;
+}
+
+.terminal__prompt {
+    margin-inline-end: 0.5em;
+    user-select: none;
+}
+
+.terminal__input {
+    flex-grow: 1;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    padding: 0;
+    outline: none;
+    caret-color: var(--color-text);
+    animation: blink 1s step-end infinite;
+}
+
+.terminal__output--system {
+    color: var(--color-system);
+}
+
+.terminal__output--error {
+    color: var(--color-error);
+    text-shadow: 0 0 5px var(--color-error);
+}
+
+.terminal__output--success {
+    color: #00ff41;
+    text-shadow: 0 0 5px #00ff41;
+}
+
+/* --- 4. Animationen & Zustände --- */
+@keyframes scan-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px); 
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shake-error {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes blink {
+    from, to { caret-color: transparent; }
+    50% { caret-color: var(--color-text); }
+}
+
+.glitch-active {
+    animation: glitch 150ms infinite;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); text-shadow: 1px 1px var(--color-error); }
+    25% { transform: translate(calc(var(--glitch-intensity) * -2px), calc(var(--glitch-intensity) * 2px)); }
+    50% { transform: translate(calc(var(--glitch-intensity) * 1px), calc(var(--glitch-intensity) * -1px)); text-shadow: -1px -1px var(--color-prompt); }
+    75% { transform: translate(calc(var(--glitch-intensity) * 2px), calc(var(--glitch-intensity) * -2px)); }
+    100% { transform: translate(0); }
+}
+
+@keyframes crt-on {
+    0% { 
+        transform: scale(1, 0.1); 
+        opacity: 0;
+        filter: brightness(4);
+    }
+    50% { 
+        transform: scale(1, 0.1);
+        opacity: 0.5;
+        filter: brightness(4);
+    }
+    100% { 
+        transform: scale(1, 1);
+        opacity: 1;
+        filter: brightness(1);
+    }
+}
+
+@keyframes corruption-flicker {
+    0% { opacity: 1; filter: none; }
+    50% { opacity: 0.7; filter: hue-rotate(10deg); }
+    51% { opacity: 0.4; filter: hue-rotate(-10deg); }
+    100% { opacity: 1; filter: none; }
+}
+
+@keyframes glitch-text {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+.terminal__output p.glitch {
+    animation: glitch-text 0.05s infinite;
+    text-shadow: 
+        2px 0 var(--color-error),
+        -2px 0 var(--color-system);
+}
+
+.terminal__input:focus {
+    text-shadow: 0 0 5px var(--color-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body, .glitch-active, .terminal__input, .terminal-wrapper--faded, .terminal__output, .shake-error {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+/* --- 5. Kollaps-Sequenz & Accessibility --- */
+.terminal-wrapper--faded {
+    opacity: 0;
+    transition: opacity 2s ease-out;
+}
+
+#collapse-container {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cursor--dead {
+    opacity: 1;
+    background-color: var(--color-text);
+    display: inline-block;
+    width: 0.5em;
+    height: 1.2em;
+    /* Veraltet durch Belohnungs-Screen, kann aber als Fallback bleiben */
+    animation: blink 1s step-end infinite;
+}
+
+/* NEU: Reward Screen Styling */
+.reward-screen {
+    color: var(--color-text);
+    border: 1px solid var(--color-text);
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    background-color: var(--color-background);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1.5s ease-out, transform 1.5s ease-out;
+    text-align: center;
+    box-shadow: 0 0 15px var(--color-text);
+}
+
+.reward-screen--visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reward-title {
+    color: var(--color-text);
+    margin-top: 0;
+    text-shadow: 0 0 5px var(--color-text);
+}
+
+.reward-subtitle {
+    color: var(--color-system);
+    margin-bottom: 2rem;
+}
+
+.reward-tracks {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+}
+
+.reward-track {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border: 1px solid transparent;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.reward-track:hover {
+    border-color: var(--color-prompt);
+    background-color: rgba(0, 255, 65, 0.05);
+}
+
+.track-link {
+    color: var(--color-prompt);
+    text-decoration: none;
+    border: 1px solid var(--color-prompt);
+    padding: 0.25rem 0.75rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.track-link:hover,
+.track-link:focus {
+    background-color: var(--color-prompt);
+    color: var(--color-background);
+}
+
+/* NEU: Achievement/KeyParts Styling */
+.achievement-list {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+.achievement-badge {
+    background: rgba(0, 255, 65, 0.08);
+    color: var(--color-text);
+    border: 1px solid rgba(0,255,65,0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+.keyparts {
+    margin-top: 1rem;
+    color: var(--color-system);
+    text-align: left;
+    max-width: 600px;
+    margin-inline: auto;
+}
+.keyparts ul {
+    margin: 0.5rem 0 0 1rem;
+    padding: 0;
+}
+.keyparts li {
+    margin: 0.25rem 0;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px; 
+    height: 1px;
+    margin: -1px; 
+    padding: 0;
+    border: 0; 
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* Start Menu Styling */
+.start-menu {
+    position: fixed;
+    inset: 0;
+    background: var(--color-background);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.start-menu__content {
+    text-align: center;
+    padding: 2rem;
+    border: 1px solid var(--color-text);
+    background: rgba(0, 255, 65, 0.05);
+    animation: fade-in 1s ease-out;
+}
+
+.start-menu__content h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    text-shadow: 0 0 10px var(--color-text);
+}
+
+.start-menu__button {
+    font-family: var(--font-family-mono);
+    font-size: 1.2rem;
+    background: transparent;
+    border: 1px solid var(--color-text);
+    color: var(--color-text);
+    padding: 1rem 2rem;
+    margin: 2rem 0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.start-menu__button:hover {
+    background: var(--color-text);
+    color: var(--color-background);
+}
+
+.start-menu__options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* STATUS BAR */
+.status-bar {
+    display: none; /* start hidden, will be shown after SYSTEM STARTEN */
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    background: rgba(0,0,0,0.45);
+    border: 1px solid rgba(0,255,65,0.08);
+    padding: 0.35rem 0.6rem;
+    border-radius: 6px;
+    z-index: 1200;
+    font-size: 0.95rem;
+    color: var(--color-text);
+}
+
+/* Visible modifier */
+.status-bar--visible {
+    display: flex !important;
+}
+
+/* subtle danger state */
+.status--danger {
+    box-shadow: 0 0 8px rgba(255,65,65,0.12);
+}
+
+/* Corruption progress */
+.status-right progress {
+    width: 120px;
+    height: 10px;
+    appearance: none;
+    border-radius: 6px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.03);
+}
+.status-right progress::-webkit-progress-bar { background: rgba(255,255,255,0.03); }
+.status-right progress::-webkit-progress-value { background: linear-gradient(90deg, #ff9b00, var(--color-error)); }
+
+/* HELP OVERLAY */
+.help-overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 1300;
+}
+.help-overlay[aria-hidden="false"] { display: flex; }
+.help-overlay__inner {
+    background: var(--color-background);
+    border: 1px solid rgba(0,255,65,0.08);
+    padding: 1.25rem;
+    width: min(480px, 90%);
+    box-shadow: 0 0 18px rgba(0,255,65,0.06);
+    text-align: left;
+    border-radius: 8px;
+}
+.help-close {
+    margin-top: 1rem;
+    background: transparent;
+    border: 1px solid var(--color-text);
+    color: var(--color-text);
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+}
+.help-close:focus { outline: 2px solid var(--color-text); outline-offset: 2px; }
+
+/* Start-menu visual tweak for focus */
+.start-menu__button:focus { outline: 2px solid rgba(0,255,65,0.2); outline-offset: 2px; }
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    .status-right progress { width: 90px; }
+    .status-bar { right: 8px; top: 8px; font-size: 0.9rem; padding: 0.25rem; }
+}
